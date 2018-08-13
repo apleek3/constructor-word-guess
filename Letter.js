@@ -13,4 +13,5 @@ var guess = process.argv.slice(3).join(" ");
 var command = process.argv[2];
 
 
-console.log("guess");
+
+
