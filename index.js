@@ -3,7 +3,7 @@ var Word = require("./Word.js");
 var inquirer = require("inquirer");
 var isLetter = require('is-letter');
 var userGuessedCorrectly = false;//When user guesses correctly, set this variable to true for that letter. The default value will be false.
-var wordList = ["apple", "orange", "banana"];//Our word bank - predefined list of words to choose from.
+var wordList = ["apple", "orange", "banana", "watermelon", "mango", "kiwi", "grapefruit", "pomegranate"];//Our word bank - predefined list of words to choose from.
 
 //Choose random word from wordList.
 var randomWord;
@@ -13,6 +13,11 @@ var someWord;
 var wins = 0;
 var losses = 0;
 var guessesRemaining = 10;
+
+
+//set the maxListener
+require('events').EventEmitter.prototype._maxListeners = 100;
+
 
 //Creating a variable to hold the letter that the user enters at the inquirer prompt.
 var userGuess = "";
@@ -30,7 +35,7 @@ var slotsFilledIn = 0;
 confirmStart();
 
 
-//Use Inquirer package to display game confirmation prompt to user.
+//Use Inquirer package to display game confirmation prompt to user
 function confirmStart() {
   var readyToStartGame = [
     {
@@ -49,13 +54,13 @@ function confirmStart() {
   inquirer.prompt(readyToStartGame).then(answers => {
     //If the user confirms that they want to play, start game.
     if (answers.readyToPlay) {
-      console.log(("Great! Welcome, " + answers.playerName + ". Let's begin..."));
+      console.log(("Great! Welcome, " + answers.playerName + ". Let's do dis..."));
       startGame();
     }
 
     else {
       //If the user decides they don't want to play, exit game.
-      console.log(("Good bye, " + answers.playerName + "! Come back soon."));
+      console.log(("Good bye, " + answers.playerName + "!"));
       return;
     }
   });
@@ -63,7 +68,7 @@ function confirmStart() {
 
 //Start game function.
 function startGame() {
-  //Reset number of guesses remainingm when user starts a new game.
+  //Reset number of guesses remaining when user starts a new game.
   guessesRemaining = 10;
   //Pick random word from word list.
   chooseRandomWord();
@@ -117,7 +122,7 @@ function guessLetter() {
       if (lettersAlreadyGuessedListArray.indexOf(guess.letter.toUpperCase()) > -1) {
         //If user already guessed a letter, run inquirer again to prompt them to enter a different letter.
         console.log(("You already guessed that letter. Enter another one."));
-        console.log(("====================================================================="));
+        console.log(("*****************************************************************************"));
         guessLetter();
       }
 
@@ -127,7 +132,7 @@ function guessLetter() {
         lettersAlreadyGuessedList = lettersAlreadyGuessedList.concat(" " + guess.letter.toUpperCase());
         lettersAlreadyGuessedListArray.push(guess.letter.toUpperCase());
         //Show letters already guessed to user.
-        console.log((('Letters already guessed: ') + lettersAlreadyGuessedList));
+        console.log((('Letters guessed so far: ') + lettersAlreadyGuessedList));
 
         //We need to loop through all of the letters in the word, 
         //and determine if the letter that the user guessed matches one of the letters in the word.
@@ -139,11 +144,11 @@ function guessLetter() {
             //Set userGuessedCorrectly to true.
             userGuessedCorrectly = true;
             someWord.underscores[i] = guess.letter.toUpperCase();
-            // someWord.underscores.join("");
-            // console.log(someWord.underscores);
+            //someWord.underscores.join("");
+            //console.log(someWord.underscores);
             //Increment the number of slots/underscores filled in with letters by 1.
             slotsFilledIn++
-            //console.log("Number of slots remaining " + slotsFilledIn);
+            // console.log("Number of slots remaining " + slotsFilledIn);
           }
         }
         console.log(("WORD TO GUESS:"));
@@ -154,7 +159,7 @@ function guessLetter() {
         if (userGuessedCorrectly) {
           //Tell user they are CORRECT (letter is in the word they are trying to guess.)
           console.log(('CORRECT!'));
-          console.log(("====================================================================="));
+          console.log(("*****************************************************************************"));
           //After each letter guess, check if the user won or lost.
           checkIfUserWon();
         }
@@ -162,11 +167,11 @@ function guessLetter() {
         //Else if user guessed incorrectly...
         else {
           //Tell user they are INCORRECT (letter is not in the word).
-          console.log(incorrect('INCORRECT!'));
+          console.log(('INCORRECT!'));
           //Decrease number of guesses remaining by 1 and display number of guesses remaining.
           guessesRemaining--;
           console.log(("You have " + guessesRemaining + " guesses left."));
-          console.log(("====================================================================="));
+          console.log(("*****************************************************************************"));
           //After each letter guess, check if the user won or lost.
           checkIfUserWon();
         }
@@ -179,29 +184,29 @@ function guessLetter() {
 function checkIfUserWon() {
   //If number of guesses remaining is 0, end game.
   if (guessesRemaining === 0) {
-    console.log(("====================================================================="));
-    console.log(incorrect('YOU LOST. BETTER LUCK NEXT TIME.'));
-    console.log(("The  city was: " + randomWord));
+    console.log(("*****************************************************************************"));
+    console.log(('YOU LOST. BETTER LUCK NEXT TIME.'));
+    console.log(("The word was: " + randomWord));
     //Increment loss counter by 1.
     losses++;
     //Display wins and losses totals.
     console.log(("Wins: " + wins));
     console.log(("Losses: " + losses));
-    console.log(("====================================================================="));
+    console.log(("*****************************************************************************"));
     //Ask user if they want to play again. Call playAgain function.
     playAgain();
   }
 
   //else if the number of slots/underscores that are filled in with a letter equals the number of letters in the word, the user won.
   else if (slotsFilledIn === someWord.letters.length) {
-    console.log(("====================================================================="));
+    console.log(("*****************************************************************************"));
     console.log(("YOU WON!"));
     //Increment win counter by 1.
     wins++;
     //Show total wins and losses.
     console.log(("Wins: " + wins));
     console.log(("Losses: " + losses));
-    console.log(("====================================================================="));
+    console.log(("*****************************************************************************"));
     //Ask user if they want to play again. Call playAgain function.
     playAgain();
   }
@@ -238,7 +243,7 @@ function playAgain() {
 
     else {
       //If user doesn't want to play again, exit game.
-      console.log(("Good bye! Come back soon."));
+      console.log(("Good bye!"));
       return;
     }
   });
