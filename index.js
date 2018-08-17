@@ -3,7 +3,7 @@ var Word = require("./Word.js");
 var inquirer = require("inquirer");
 var isLetter = require('is-letter');
 var userGuessedCorrectly = false;//When user guesses correctly, set this variable to true for that letter. The default value will be false.
-var wordList = ["apple", "orange", "banana", "watermelon", "mango", "kiwi", "grapefruit", "pomegranate"];//Our word bank - predefined list of words to choose from.
+var wordList = ["apple", "orange", "banana", "watermelon", "mango", "kiwi", "grapefruit", "pomegranate", "durian", "dragonfruit", "lemon", "lime"];//Our word bank - predefined list of words to choose from.
 
 //Choose random word from wordList.
 var randomWord;
@@ -46,7 +46,7 @@ function confirmStart() {
     {
       type: 'confirm',
       name: 'readyToPlay',
-      message: 'Are you ready to play?',
+      message: "Do you wanna play a game? I'm thinking of a fruit; guess its letters. 10 mistakes maximum. Ready?",
       default: true
     }
   ];
@@ -84,8 +84,8 @@ function chooseRandomWord() {
   //Set the random word chosen from the word list to someWord.
   someWord = new Word(randomWord);
   //Tell the user how many letters are in the word.
-  console.log(("Your word contains " + randomWord.length + " letters."));
-  console.log(("WORD TO GUESS:"));
+  console.log(("Your 'fruit' contains " + randomWord.length + " letters."));
+  console.log(("'FRUIT' TO GUESS:"));
   //Use the Word constructor in Word.js to split the word and generate letters.
   someWord.splitWord();
   someWord.generateLetters();
@@ -186,7 +186,7 @@ function checkIfUserWon() {
   if (guessesRemaining === 0) {
     console.log(("*****************************************************************************"));
     console.log(('YOU LOST. BETTER LUCK NEXT TIME.'));
-    console.log(("The word was: " + randomWord));
+    console.log(("The 'fruit' was: " + randomWord));
     //Increment loss counter by 1.
     losses++;
     //Display wins and losses totals.

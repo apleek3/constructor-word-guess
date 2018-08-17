@@ -19,6 +19,7 @@
   "homepage": "https://github.com/apleek3/constructor-word-guess#readme",
   "dependencies": {
     "inquirer": "^6.1.0",
-    "is-letter": "^1.1.1"
+    "is-letter": "^1.1.1",
+    "lodash": "^4.17.10"
   }
 }

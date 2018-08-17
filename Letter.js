@@ -8,16 +8,16 @@ var Letter = function (character) {
 
         } else {
             this.letterGuessedCorrectly = false;
-        }
+        };
 
         Letter.prototype.showCharacter = function () {
             if (this.letterGuessedCorrectly) {
                 return this.value;
             } else {
                 return "_";
-            }
+            };
         };
-    }
-}   
+    };
+};
 
 module.exports = Letter //export Letter 
