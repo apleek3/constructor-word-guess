@@ -1,13 +1,12 @@
-
 var Word = require("./Word.js");
 var inquirer = require("inquirer");
 var isLetter = require('is-letter');
-var userGuessedCorrectly = false;//When user guesses correctly, set this variable to true for that letter. The default value will be false.
+var userGuessedCorrectly = false;//Sets default value for guesses
 var wordList = ["apple", "orange", "banana", "watermelon", "mango", "kiwi", "grapefruit", "pomegranate", "durian", "dragonfruit", "lemon", "lime"];//Our word bank - predefined list of words to choose from.
 
 //Choose random word from wordList.
-var randomWord;
-var someWord;
+var randomFruit;
+var someFruit;
 
 //Counters for wins, losses, and guesses remaining.
 var wins = 0;
@@ -15,27 +14,27 @@ var losses = 0;
 var guessesRemaining = 10;
 
 
-//set the maxListener
+//Sets the maxListener so that an error isn't returned for hitting the default of 10
 require('events').EventEmitter.prototype._maxListeners = 100;
 
 
-//Creating a variable to hold the letter that the user enters at the inquirer prompt.
+//Variables to hold the letter that the user enters at the inquirer prompt
 var userGuess = "";
 
-//Creating a variable to hold letters that user already guessed.
+//Variables to hold letters that user already guessed
 var lettersAlreadyGuessedList = "";
 var lettersAlreadyGuessedListArray = [];
 
-//Number of underscores/slots that have been filled in with a letter. 
-//When game starts or is reset, this value should be 0.
+//Number of underscores/slots that have been filled in with a letter
+//When game starts or is reset, this value should be 0
 var slotsFilledIn = 0;
 
 
-//Ask user if they are ready to play.
+//Ask the user if they are ready to play
 confirmStart();
 
 
-//Use Inquirer package to display game confirmation prompt to user
+//Use Inquirer to prompt the user
 function confirmStart() {
   var readyToStartGame = [
     {
@@ -52,56 +51,55 @@ function confirmStart() {
   ];
 
   inquirer.prompt(readyToStartGame).then(answers => {
-    //If the user confirms that they want to play, start game.
+    //Starts the game
     if (answers.readyToPlay) {
       console.log(("Great! Welcome, " + answers.playerName + ". Let's do dis..."));
       startGame();
     }
 
     else {
-      //If the user decides they don't want to play, exit game.
+      //If user wants to exit game
       console.log(("Good bye, " + answers.playerName + "!"));
       return;
     }
   });
 }
 
-//Start game function.
+//Starts game
 function startGame() {
-  //Reset number of guesses remaining when user starts a new game.
+  //Resets number of guesses 
   guessesRemaining = 10;
-  //Pick random word from word list.
+  //Picks random word from word list
   chooseRandomWord();
-  //When game is reset, empty out list of already guessed letters.
+  //When game is reset, empties out list of already guessed letters
   lettersAlreadyGuessedList = "";
   lettersAlreadyGuessedListArray = [];
 }
 
-//Function to choose a random word from the list of cities in the word bank array.
+//Function to choose a random word from the list of fruits in the word bank
 function chooseRandomWord() {
-  //Randomly generate word from wordList array.
-  randomWord = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
-  //Set the random word chosen from the word list to someWord.
-  someWord = new Word(randomWord);
-  //Tell the user how many letters are in the word.
-  console.log(("Your 'fruit' contains " + randomWord.length + " letters."));
+  //Randomly generates fruit from wordList array
+  randomFruit = wordList[Math.floor(Math.random() * wordList.length)].toUpperCase();
+  //Sets the random fruit chosen from the word list to someFruit
+  someFruit = new Word(randomFruit);
+  //Tell the user how many letters are in the fruit
+  console.log(("Your 'fruit' contains " + randomFruit.length + " letters."));
   console.log(("'FRUIT' TO GUESS:"));
-  //Use the Word constructor in Word.js to split the word and generate letters.
-  someWord.splitWord();
-  someWord.generateLetters();
+  //Use the Word constructor in Word.js to split the fruit and make letters
+  someFruit.splitWord();
+  someFruit.generateLetters();
   guessLetter();
 }
 
-//Function that will prompt the user to enter a letter. This letter is the user's guess.
+//Prompts the user to enter a letter and stores it as their guess
 function guessLetter() {
-  //Keep prompting user to enter a letter if there are slots/underscores that still need to be filled in
-  //OR if there are still guesses remaining.
-  if (slotsFilledIn < someWord.letters.length || guessesRemaining > 0) {
+  //Prompts user to enter a letter if there are slots/underscores that still need to be filled in
+  if (slotsFilledIn < someFruit.letters.length || guessesRemaining > 0) {
     inquirer.prompt([
       {
         name: "letter",
         message: "Guess a letter:",
-        //Check if value is a letter (for example, "a") or not a letter ("aba") using the is-letter npm package.
+        //Check if value is a letter using the 'is-letter'
         validate: function (value) {
           if (isLetter(value)) {
             return true;
@@ -112,67 +110,61 @@ function guessLetter() {
         }
       }
     ]).then(function (guess) {
-      //Convert all letters guessed by the user to upper case.
+      //Converts all letters guessed to upper case
       guess.letter.toUpperCase();
       console.log(("You guessed: " + guess.letter.toUpperCase()));
-      //Assume  guess to be false at this point.
+      //Assumes  guess to be false initially
       userGuessedCorrectly = false;
-      //Need to find out if letter was already guessed by the user. If already guessed by the user, notify the user to enter another letter.
-      //User shouldn't be able to continue with game if they guess the same letter more than once.
+      //Finds out if letter was already guessed. If already guessed, notify the user
       if (lettersAlreadyGuessedListArray.indexOf(guess.letter.toUpperCase()) > -1) {
-        //If user already guessed a letter, run inquirer again to prompt them to enter a different letter.
+        //If user already guessed a letter runs inquirer again
         console.log(("You already guessed that letter. Enter another one."));
         console.log(("*****************************************************************************"));
         guessLetter();
       }
 
-      //If user entered a letter that was not already guessed...
+      //If user enters a letter that was not already guessed
       else if (lettersAlreadyGuessedListArray.indexOf(guess.letter.toUpperCase()) === -1) {
-        //Add letter to list of already guessed letters.
+        //Adds letter to list of already guessed letters
         lettersAlreadyGuessedList = lettersAlreadyGuessedList.concat(" " + guess.letter.toUpperCase());
         lettersAlreadyGuessedListArray.push(guess.letter.toUpperCase());
-        //Show letters already guessed to user.
+        //Shows letters already guessed to user
         console.log((('Letters guessed so far: ') + lettersAlreadyGuessedList));
 
-        //We need to loop through all of the letters in the word, 
-        //and determine if the letter that the user guessed matches one of the letters in the word.
-        for (i = 0; i < someWord.letters.length; i++) {
-          //If the user guess equals one of the letters/characters in the word and letterGuessedCorrectly is equal to false for that letter...
-          if (guess.letter.toUpperCase() === someWord.letters[i].character && someWord.letters[i].letterGuessedCorrectly === false) {
-            //Set letterGuessedCorrectly property for that letter equal to true.
-            someWord.letters[i].letterGuessedCorrectly === true;
-            //Set userGuessedCorrectly to true.
+        // Determines if the letter that the user guessed matches one of the letters in the word.
+        for (i = 0; i < someFruit.letters.length; i++) {
+          //If the user's guess equals one of the letters/characters in the word and letterGuessedCorrectly is equal to false 
+          if (guess.letter.toUpperCase() === someFruit.letters[i].character && someFruit.letters[i].letterGuessedCorrectly === false) {
+            //Sets letterGuessedCorrectly property for that letter equal to true
+            someFruit.letters[i].letterGuessedCorrectly === true;
+            //Sets userGuessedCorrectly to true
             userGuessedCorrectly = true;
-            someWord.underscores[i] = guess.letter.toUpperCase();
-            //someWord.underscores.join("");
-            //console.log(someWord.underscores);
-            //Increment the number of slots/underscores filled in with letters by 1.
+            someFruit.underscores[i] = guess.letter.toUpperCase();
+            //Increase the number of slots/underscores filled in with letters by 1
             slotsFilledIn++
-            // console.log("Number of slots remaining " + slotsFilledIn);
           }
         }
+        //Show off progress so far with hint
         console.log(("WORD TO GUESS:"));
-        someWord.splitWord();
-        someWord.generateLetters();
+        someFruit.splitWord();
+        someFruit.generateLetters();
 
-        //If user guessed correctly...
+        //User guesses correctly
         if (userGuessedCorrectly) {
-          //Tell user they are CORRECT (letter is in the word they are trying to guess.)
           console.log(('CORRECT!'));
           console.log(("*****************************************************************************"));
-          //After each letter guess, check if the user won or lost.
+          //Function to see if user won yet
           checkIfUserWon();
         }
 
-        //Else if user guessed incorrectly...
+        //User guesses incorrectly
         else {
-          //Tell user they are INCORRECT (letter is not in the word).
           console.log(('INCORRECT!'));
-          //Decrease number of guesses remaining by 1 and display number of guesses remaining.
+          //'Lives' -1
           guessesRemaining--;
           console.log(("You have " + guessesRemaining + " guesses left."));
           console.log(("*****************************************************************************"));
-          //After each letter guess, check if the user won or lost.
+          //Function to see if user won yet
           checkIfUserWon();
         }
       }
@@ -180,45 +172,45 @@ function guessLetter() {
   }
 }
 
-//This function will check if the user won or lost after user guesses a letter.
+//function to see if the user won or lost 
 function checkIfUserWon() {
-  //If number of guesses remaining is 0, end game.
+  //If Lives/guess = 0, Game Over
   if (guessesRemaining === 0) {
     console.log(("*****************************************************************************"));
     console.log(('YOU LOST. BETTER LUCK NEXT TIME.'));
-    console.log(("The 'fruit' was: " + randomWord));
-    //Increment loss counter by 1.
+    console.log(("The 'fruit' was: " + randomFruit));
+    //Increase loss counter by 1
     losses++;
-    //Display wins and losses totals.
+    //Displays totals
     console.log(("Wins: " + wins));
     console.log(("Losses: " + losses));
     console.log(("*****************************************************************************"));
-    //Ask user if they want to play again. Call playAgain function.
+    //Asks user if they want to play again
     playAgain();
   }
 
-  //else if the number of slots/underscores that are filled in with a letter equals the number of letters in the word, the user won.
-  else if (slotsFilledIn === someWord.letters.length) {
+  //If the number of slots/underscores that are filled in with a letter equals the number of letters in the word, then the user won
+  else if (slotsFilledIn === someFruit.letters.length) {
     console.log(("*****************************************************************************"));
     console.log(("YOU WON!"));
-    //Increment win counter by 1.
+    //Increases win counter by 1
     wins++;
-    //Show total wins and losses.
+    //Show total wins and losses
     console.log(("Wins: " + wins));
     console.log(("Losses: " + losses));
     console.log(("*****************************************************************************"));
-    //Ask user if they want to play again. Call playAgain function.
+    //Asks user if they want to play again
     playAgain();
   }
 
   else {
-    //If user did not win or lose after a guess, keep running inquirer.
+    //If user did not win or lose keeps on playing
     guessLetter("");
   }
 
 }
 
-//Create a function that will ask user if they want to play again at the end of the game.
+//Function that asks the user if they want to play again
 function playAgain() {
   var playGameAgain = [
     {
@@ -231,10 +223,10 @@ function playAgain() {
 
   inquirer.prompt(playGameAgain).then(userWantsTo => {
     if (userWantsTo.playAgain) {
-      //Empty out the array that contains the letters already guessed.
+      //Empties out the array that contains the letters
       lettersAlreadyGuessedList = "";
       lettersAlreadyGuessedListArray = [];
-      //Set number of slots filled in with letters back to zero.
+      //Resets the number of slots filled in
       slotsFilledIn = 0;
       console.log(("Great! Welcome back. Let's begin..."));
       //start a new game.
@@ -242,7 +234,7 @@ function playAgain() {
     }
 
     else {
-      //If user doesn't want to play again, exit game.
+      //Ends game if user doesn't want to play again. Whatever.
       console.log(("Good bye!"));
       return;
     }
